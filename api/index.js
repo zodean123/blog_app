@@ -11,12 +11,13 @@ const cookieParser = require('cookie-parser');
 const multer = require('multer');
 const uploadMiddleWare = multer({dest:'uploads/'})
 const fs = require('fs'); //Renaming the file
-
 const salt = bcrypt.genSaltSync(10);
 const secret = 'asdfasdgouhfgjhaslfjasdf';
 
+require('dotenv').config()
 
-app.use(cors({credentials:true,origin:'http://localhost:3000'}));
+
+app.use(cors({credentials:true,origin:process.env.FRONTEND_URL}));
 app.use(express.json());
 app.use(cookieParser());
 app.use('/uploads',express.static(__dirname+'/uploads'));
@@ -208,4 +209,5 @@ app.get('/profile', (req, res) => {
 
 app.listen(PORT, () => {
     console.log(`Connection is live at port no. ${PORT}`);
+    console.log(process.env.FRONTEND_URL)
 })
