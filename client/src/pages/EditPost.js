@@ -37,7 +37,7 @@ export default function EditPost(){
     if(files?.[0]){
       data.set('file',files?.[0]);
     }
-    const response =  await fetch(process.env.REACT_APP_BACKEND_URL + '/post',{
+    const response =  await fetch(process.env.REACT_APP_BACKEND_URL + '/post/update',{
       method:'PUT',
       body:data,
       credentials:'include',

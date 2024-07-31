@@ -17,9 +17,17 @@ const secret = 'asdfasdgouhfgjhaslfjasdf';
 require('dotenv').config()
 
 
+// require('dotenv').config();
+// console.log('Frontend URL:', process.env.FRONTEND_URL);
+
+// app.use(cors({
+//   origin: process.env.FRONTEND_URL,
+//   credentials: true,
+// }));
+
 app.use(cors({
-  origin:process.env.FRONTEND_URL,
-  credentials:true,
+  origin: '*',
+  credentials: true,
 }));
 
 
@@ -151,15 +159,6 @@ app.get('/profile', (req, res) => {
 });
 
 
-
-
-
-
-
-
-
-
-
   app.post('/logout', (req,res) => {
     res.cookie('token', '').json('ok');
   });
@@ -196,7 +195,7 @@ app.get('/profile', (req, res) => {
   
   });
 
-  app.put('/post', uploadMiddleWare.single('file'), async (req, res) => {
+  app.put('/post/update', uploadMiddleWare.single('file'), async (req, res) => {
     let newPath = null;
     if (req.file) {
       const { originalname, path } = req.file;
@@ -276,14 +275,14 @@ app.get('/profile', (req, res) => {
     });
   });
 
-  app.get('/post', async (req,res) => {
-    res.json(
-      await Post.find()
-        .populate('author', ['username'])
-        .sort({createdAt: -1})
-        .limit(20)
-    );
-  });
+  // app.get('/post/user', async (req,res) => {
+  //   res.json(
+  //     await Post.find()
+  //       .populate('author', ['username'])
+  //       .sort({createdAt: -1})
+  //       .limit(20)
+  //   );
+  // });
 
   app.get('/post/:id', async (req, res) => {
     const {id} = req.params;
