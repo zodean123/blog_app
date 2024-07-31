@@ -204,6 +204,7 @@ app.get('/profile', (req, res) => {
       fs.renameSync(path, newPath);
   
       // Retrieve token from Authorization header
+      console.log(req.headers);
       const authHeader = req.headers['authorization'];
       if (!authHeader) {
         return res.status(401).json({ error: 'Authorization header must be provided' });
