@@ -163,12 +163,12 @@ app.get('/profile', (req, res) => {
     res.cookie('token', '').json('ok');
   });
   
-  app.post('/post', uploadMiddleWare.single('file'), async (req,res) => {
-    const {originalname,path} = req.file;
-    const parts = originalname.split('.');
-    const ext = parts[parts.length - 1];
-    const newPath = path+'.'+ext;
-    fs.renameSync(path, newPath);
+  // app.post('/post', uploadMiddleWare.single('file'), async (req,res) => {
+  //   const {originalname,path} = req.file;
+  //   const parts = originalname.split('.');
+  //   const ext = parts[parts.length - 1];
+  //   const newPath = path+'.'+ext;
+  //   fs.renameSync(path, newPath);
   
     // const {token} = req.cookies;
 
@@ -179,21 +179,61 @@ app.get('/profile', (req, res) => {
 
 
     // console.log(token);
-    jwt.verify(token, secret, {}, async (err,info) => {
-      if (err) throw err;
-      const {title,summary,content} = req.body;
-      const postDoc = await Post.create({
-        title,
-        summary,
-        content,
-        cover:newPath,
-        author:info.id,
+  //   jwt.verify(token, secret, {}, async (err,info) => {
+  //     if (err) throw err;
+  //     const {title,summary,content} = req.body;
+  //     const postDoc = await Post.create({
+  //       title,
+  //       summary,
+  //       content,
+  //       cover:newPath,
+  //       author:info.id,
         
-      });
-      res.json(postDoc);
-    });
+  //     });
+  //     res.json(postDoc);
+  //   });
   
+  // });
+
+  app.post('/post', uploadMiddleWare.single('file'), async (req, res) => {
+    try {
+      const { originalname, path } = req.file;
+      const parts = originalname.split('.');
+      const ext = parts[parts.length - 1];
+      const newPath = path + '.' + ext;
+      fs.renameSync(path, newPath);
+  
+      // Retrieve token from Authorization header
+      const authHeader = req.headers['authorization'];
+      if (!authHeader) {
+        return res.status(401).json({ error: 'Authorization header must be provided' });
+      }
+      const token = authHeader.split(' ')[1];
+      if (!token) {
+        return res.status(401).json({ error: 'Token must be provided' });
+      }
+  
+      jwt.verify(token, secret, {}, async (err, info) => {
+        if (err) {
+          return res.status(403).json({ error: 'Invalid token' });
+        }
+  
+        const { title, summary, content } = req.body;
+        const postDoc = await Post.create({
+          title,
+          summary,
+          content,
+          cover: newPath,
+          author: info.id,
+        });
+        res.json(postDoc);
+      });
+    } catch (err) {
+      console.error('Error in /post route:', err);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
   });
+  
 
   app.put('/post/update', uploadMiddleWare.single('file'), async (req, res) => {
     let newPath = null;
