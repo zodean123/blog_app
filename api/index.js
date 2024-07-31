@@ -17,7 +17,12 @@ const secret = 'asdfasdgouhfgjhaslfjasdf';
 require('dotenv').config()
 
 
-app.use(cors({credentials:true,origin:process.env.FRONTEND_URL}));
+app.use(cors({
+  origin:process.env.FRONTEND_URL,
+  credentials:true,
+}));
+
+
 app.use(express.json());
 app.use(cookieParser());
 app.use('/uploads',express.static(__dirname+'/uploads'));
@@ -32,6 +37,7 @@ app.post('/register',async (req,res)=>{
             password:bcrypt.hashSync(password,salt),
         })
         res.json(user);
+        console.log(user);
     }
     catch(err){
         res.status(400).json(err);
@@ -39,37 +45,89 @@ app.post('/register',async (req,res)=>{
  
 })
 
-app.post('/login',async (req,res)=>{
-    const {username,password} = req.body;
-    const userDoc = await User.findOne({username});
-  const passok =  bcrypt.compareSync(password,userDoc.password);
-  if(passok){
-   jwt.sign({username,id:userDoc._id},secret,{},(err,token)=>{
-    if(err) throw err;
+// app.post('/login',async (req,res)=>{
+//     const {username,password} = req.body;
+//     const userDoc = await User.findOne({username});
+//   const passok =  bcrypt.compareSync(password,userDoc.password);
+//   if(passok){
+//    jwt.sign({username,id:userDoc._id},secret,{},(err,token)=>{
+//     if(err) throw err;
   
-    res.cookie('token',token).json({
-        id:userDoc._id,
-        username,
-    });
+//     res.cookie('token',token).json({
+//         id:userDoc._id,
+//         username,
+//     });
    
+// });
+
+//   }
+//   else{
+//     res.status(400).json('wrong credentials');
+//   }
+// })
+
+
+app.post('/login', async (req, res) => {
+  const { username, password } = req.body;
+  try {
+      const userDoc = await User.findOne({ username });
+      if (!userDoc) {
+          return res.status(400).json({ message: 'User not found' });
+      }
+
+      const passok = bcrypt.compareSync(password, userDoc.password);
+      if (passok) {
+          jwt.sign({ username, id: userDoc._id }, secret, {}, (err, token) => {
+              if (err) throw err;
+
+              res.json({
+                  id: userDoc._id,
+                  username,
+                  token
+              });
+          });
+      } else {
+          res.status(400).json({ message: 'Invalid credentials' });
+      }
+  } catch (err) {
+      res.status(500).json({ message: 'Internal server error' });
+  }
 });
 
-  }
-  else{
-    res.status(400).json('wrong credentials');
-  }
-})
+
+// app.get('/profile', (req, res) => {
+//   const { token } = req.cookies;
+  
+//   // Check if the token is present
+//   if (!token) {
+//       return res.status(401).json({ error: 'Token must be provided' });
+//   }
+
+//   jwt.verify(token, secret, {}, (err, info) => {
+//       if (err) {
+//           return res.status(401).json({ error: 'Invalid token' });
+//       }
+//       res.json(info);
+//   });
+// });
+
+
 
 
 app.get('/profile', (req, res) => {
-  const { token } = req.cookies;
+  const authHeader = req.headers['authorization'];
   
-  // Check if the token is present
+  if (!authHeader) {
+      return res.status(401).json({ error: 'Authorization header must be provided' });
+  }
+
+  const token = authHeader.split(' ')[1];
+
   if (!token) {
       return res.status(401).json({ error: 'Token must be provided' });
   }
 
-  jwt.verify(token, secret, {}, (err, info) => {
+  jwt.verify(token, secret, (err, info) => {
       if (err) {
           return res.status(401).json({ error: 'Invalid token' });
       }
@@ -77,7 +135,10 @@ app.get('/profile', (req, res) => {
   });
 });
 
-  
+
+
+
+
 
 
 
@@ -95,8 +156,15 @@ app.get('/profile', (req, res) => {
     const newPath = path+'.'+ext;
     fs.renameSync(path, newPath);
   
-    const {token} = req.cookies;
-    console.log(token);
+    // const {token} = req.cookies;
+
+
+    // const authHeader = req.headers['authorization'];
+    //  const token = authHeader.split(' ')[1];
+
+
+
+    // console.log(token);
     jwt.verify(token, secret, {}, async (err,info) => {
       if (err) throw err;
       const {title,summary,content} = req.body;
@@ -122,7 +190,8 @@ app.get('/profile', (req, res) => {
       newPath = `${path}.${ext}`;
       fs.renameSync(path, newPath);
     }
-  
+    // const authHeader = req.headers['authorization'];
+    //  const token = authHeader.split(' ')[1];
     const { token } = req.cookies;
     
     jwt.verify(token, secret, {}, async (err, info) => {

@@ -1,4 +1,4 @@
-import ReactQuill from 'react-quill';
+
 import 'react-quill/dist/quill.snow.css';
 import {useState,} from 'react';
 import Editor from '../Editor';
@@ -11,7 +11,7 @@ export default function CreatePost(){
     const [files,setFiles] = useState('');
     const [redirect,setRedirect] = useState(false);
       async function createNewPost(ev){
-         const data = new FormData(); //new object to handle form data
+         const data = new FormData(); 
         data.set('title',title);
         data.set('content',content);
         data.set('summary',summary);

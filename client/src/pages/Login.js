@@ -19,9 +19,13 @@ export default function LoginPage() {
       credentials: 'include',
     });
     if (response.ok) {
+
+   
+     
       response.json().then(userInfo => {
         setUserInfo(userInfo);
         setRedirect(true);
+        localStorage.setItem('token', userInfo.token);
       });
     } else {
       setModalMessage('Wrong credentials, please try again!');
