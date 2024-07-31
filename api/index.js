@@ -18,8 +18,8 @@ require('dotenv').config()
 
 
 app.use(cors({
-  origin:process.env.FRONTEND_URL,
-  credentials:true,
+  origin: [process.env.FRONTEND_URL, 'https://blog-app-five-zeta.vercel.app'],
+  credentials: true,
 }));
 
 
@@ -27,7 +27,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use('/uploads',express.static(__dirname+'/uploads'));
 
-mongoose.connect('mongodb+srv://dipanmallick7085:dipanb660b6@cluster0.8oejhss.mongodb.net/');
+mongoose.connect(process.env.MONGODB_URI);
 
 app.post('/register',async (req,res)=>{
     try{
