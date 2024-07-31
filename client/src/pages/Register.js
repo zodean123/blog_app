@@ -9,7 +9,8 @@ export default function RegisterPage() {
   async function register(e) {
     e.preventDefault();
     try {
-      const response = await fetch(process.env.REACT_APP_BACKEND_URL + '/register', {
+      console.log(process.env.REACT_APP_BACKEND_URL);
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/register`, {
         method: 'POST',
         headers: {
           'Content-type': 'application/json',
