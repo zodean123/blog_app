@@ -1,21 +1,19 @@
-import {useContext, useEffect, useState} from "react";
-import {useParams} from "react-router-dom";
-import {formatISO9075} from "date-fns";
-import {UserContext} from "../UserContext";
-import {Link} from 'react-router-dom';
+import { useContext, useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { formatISO9075 } from "date-fns";
+import { UserContext } from "../UserContext";
+import { Link } from 'react-router-dom';
 
 export default function PostPage() {
-  const [postInfo,setPostInfo] = useState(null);
-  const {userInfo} = useContext(UserContext);
-  const {id} = useParams();
+  const [postInfo, setPostInfo] = useState(null);
+  const { userInfo } = useContext(UserContext);
+  const { id } = useParams();
+
   useEffect(() => {
     fetch(`${process.env.REACT_APP_BACKEND_URL}/post/${id}`)
-      .then(response => {
-        response.json().then(postInfo => {
-          setPostInfo(postInfo);
-        });
-      });
-  }, []);
+      .then(response => response.json())
+      .then(postInfo => setPostInfo(postInfo));
+  }, [id]);
 
   if (!postInfo) return '';
 
@@ -24,7 +22,7 @@ export default function PostPage() {
       <h1>{postInfo.title}</h1>
       <time>{formatISO9075(new Date(postInfo.createdAt))}</time>
       <div className="author">by @{postInfo.author.username}</div>
-      {userInfo.id === postInfo.author._id && (
+      {userInfo?.id === postInfo.author._id && (
         <div className="edit-row">
           <Link className="edit-btn" to={`/edit/${postInfo._id}`}>
             Edit this post
@@ -32,9 +30,9 @@ export default function PostPage() {
         </div>
       )}
       <div className="image">
-      <img src={`${process.env.REACT_APP_BACKEND_URL}/uploads/${post.cover}`} alt="Cover" />
+        <img src={`${process.env.REACT_APP_BACKEND_URL}/uploads/${postInfo.cover}`} alt="Cover" />
       </div>
-      <div className="content" dangerouslySetInnerHTML={{__html:postInfo.content}} />
+      <div className="content" dangerouslySetInnerHTML={{ __html: postInfo.content }} />
     </div>
   );
 }

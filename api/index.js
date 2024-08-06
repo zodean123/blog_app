@@ -5,16 +5,28 @@ const User = require("./models/user.js");
 const Post = require('./models/Post.js');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
-const PORT = 4000;
 const jwt = require("jsonwebtoken");
 const cookieParser = require('cookie-parser');
 const multer = require('multer');
-const uploadMiddleWare = multer({ dest: 'uploads/' });
 const fs = require('fs');
+const path = require('path');
+const PORT = 4000;
+
+require('dotenv').config();
+
 const salt = bcrypt.genSaltSync(10);
 const secret = 'asdfasdgouhfgjhaslfjasdf';
 
-require('dotenv').config();
+const uploadMiddleWare = multer({ dest: 'uploads/' });
+
+// Create uploads directory if it doesn't exist
+const uploadsDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir);
+    console.log('Uploads directory created.');
+}
+
+app.use('/uploads', express.static(uploadsDir));
 
 console.log('Frontend URL:', process.env.FRONTEND_URL);
 
@@ -25,7 +37,6 @@ app.use(cors({
 
 app.use(express.json());
 app.use(cookieParser());
-app.use('/uploads', express.static(__dirname + '/uploads'));
 
 mongoose.connect('mongodb+srv://dipanmallick7085:dipanb660b6@cluster0.8oejhss.mongodb.net/', {
   useNewUrlParser: true,
@@ -48,7 +59,6 @@ app.post('/register', async (req, res) => {
       password: bcrypt.hashSync(password, salt),
     });
     res.json(user);
-    console.log(user);
   } catch (err) {
     res.status(400).json(err);
   }
@@ -105,25 +115,6 @@ app.post('/logout', (req, res) => {
   res.cookie('token', '').json('ok');
 });
 
-// Create uploads directory if it doesn't exist
-const uploadsDir = path.join(__dirname, 'uploads');
-if (!fs.existsSync(uploadsDir)) {
-    fs.mkdirSync(uploadsDir);
-    console.log('Uploads directory created.');
-}
-
-console.log('Frontend URL:', process.env.FRONTEND_URL);
-
-app.use(cors({
-  origin: process.env.FRONTEND_URL,
-  credentials: true,
-}));
-
-app.use(express.json());
-app.use(cookieParser());
-app.use('/uploads', express.static(uploadsDir));
-
-// Create Post
 app.post('/post', uploadMiddleWare.single('file'), async (req, res) => {
   try {
     const { originalname, path: tempPath } = req.file;
@@ -151,7 +142,7 @@ app.post('/post', uploadMiddleWare.single('file'), async (req, res) => {
         title,
         summary,
         content,
-        cover: newPath,
+        cover: path.basename(newPath), // Store only the filename
         author: info.id,
       });
       res.json(postDoc);
@@ -162,7 +153,6 @@ app.post('/post', uploadMiddleWare.single('file'), async (req, res) => {
   }
 });
 
-// Get Posts
 app.get('/post', async (req, res) => {
   try {
     const posts = await Post.find().populate('author', ['username']);
@@ -175,11 +165,11 @@ app.get('/post', async (req, res) => {
 app.put('/post/update', uploadMiddleWare.single('file'), async (req, res) => {
   let newPath = null;
   if (req.file) {
-    const { originalname, path } = req.file;
+    const { originalname, path: tempPath } = req.file;
     const parts = originalname.split('.');
     const ext = parts[parts.length - 1];
-    newPath = `${path}.${ext}`;
-    fs.renameSync(path, newPath);
+    newPath = `${tempPath}.${ext}`;
+    fs.renameSync(tempPath, newPath);
   }
 
   const authHeader = req.headers['authorization'];
@@ -219,7 +209,7 @@ app.put('/post/update', uploadMiddleWare.single('file'), async (req, res) => {
         title,
         summary,
         content,
-        cover: newPath ? newPath : postDoc.cover,
+        cover: newPath ? path.basename(newPath) : postDoc.cover,
       });
 
       return res.json(postDoc);
@@ -231,7 +221,6 @@ app.put('/post/update', uploadMiddleWare.single('file'), async (req, res) => {
     }
   });
 });
-
 
 app.delete('/post/:id', async (req, res) => {
   const { id } = req.params;
