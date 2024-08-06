@@ -23,10 +23,11 @@ export default function IndexPage() {
   }, []);
 
   async function handleDelete(id, authorId) {
-    if (userInfo.id !== authorId) {
-      setShowModal(true);
-      return;
-    }
+    console.log(userInfo, authorId);
+    // if (userInfo.id !== authorId) {
+    //   setShowModal(true);
+    //   return;
+    // }
   
     const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/post/${id}`, {
       method: 'DELETE',
