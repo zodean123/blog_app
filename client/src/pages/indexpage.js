@@ -6,6 +6,7 @@ import Post from '../Post';
 export default function IndexPage() {
   const [posts, setPosts] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
   const { userInfo } = useContext(UserContext);
   const navigate = useNavigate();
 
