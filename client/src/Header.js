@@ -1,9 +1,10 @@
 import { Link } from "react-router-dom";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { UserContext } from "./UserContext";
 
 export default function Header() {
   const { setUserInfo, userInfo } = useContext(UserContext);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -43,17 +44,22 @@ export default function Header() {
       <header>
         <Link to="/" className="logo">MyBlog</Link>
         <nav>
-          {username ? (
-            <>
-              <Link to="/create" className="button">Create new post</Link>
-              <button onClick={logout} className="button">Logout @{username}</button>
-            </>
-          ) : (
-            <>
-              <Link to="/login" className="button">Login</Link>
-              <Link to="/register" className="button">Register</Link>
-            </>
-          )}
+          <div className={`menu ${menuOpen ? 'open' : ''}`} onClick={() => setMenuOpen(!menuOpen)}>
+            ☰
+          </div>
+          <div className={`menu-items ${menuOpen ? 'open' : ''}`}>
+            {username ? (
+              <>
+                <Link to="/create" className="button">Create new post</Link>
+                <button onClick={logout} className="button">Logout @{username}</button>
+              </>
+            ) : (
+              <>
+                <Link to="/login" className="button">Login</Link>
+                <Link to="/register" className="button">Register</Link>
+              </>
+            )}
+          </div>
         </nav>
       </header>
       <style>{navbarStyle}</style>
@@ -82,12 +88,23 @@ const navbarStyle = `
   }
 
   nav {
+    position: relative;
+  }
+
+  .menu {
+    display: none;
+    font-size: 24px;
+    color: white;
+    cursor: pointer;
+  }
+
+  .menu-items {
     display: flex;
     gap: 10px;
   }
 
   .button {
-    background-color: #4CAF50; /* Green */
+    background-color: #007BFF; /* Blue */
     border: none;
     color: white;
     padding: 10px 20px;
@@ -102,7 +119,7 @@ const navbarStyle = `
   }
 
   .button:hover {
-    background-color: #45a049;
+    background-color: #0056b3;
     transform: scale(1.05);
   }
 
@@ -126,16 +143,31 @@ const navbarStyle = `
   @media (max-width: 600px) {
     header {
       flex-direction: column;
-      align-items: flex-start;
+      align-items: center;
     }
 
     .logo {
       margin-bottom: 10px;
+      text-align: center;
     }
 
     nav {
-      flex-direction: column;
       width: 100%;
+      text-align: center;
+    }
+
+    .menu {
+      display: block;
+    }
+
+    .menu-items {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .menu-items.open {
+      display: flex;
     }
 
     .button {
