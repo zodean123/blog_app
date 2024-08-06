@@ -11,13 +11,14 @@ export default function IndexPage() {
 
   useEffect(() => {
     fetch(`${process.env.REACT_APP_BACKEND_URL}/post`)
-      .then(response => response.json())
-      .then(posts => {
-        setPosts(posts);
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
       })
-      .catch(error => {
-        console.error("Error fetching posts:", error);
-      });
+      .then(posts => setPosts(posts))
+      .catch(error => console.error('Error fetching posts:', error));
   }, []);
 
   async function handleDelete(id, authorId) {
@@ -40,6 +41,7 @@ export default function IndexPage() {
 
   return (
     <>
+      <h1>All Posts</h1>
       {posts.length > 0 && posts.map(post => (
         <div key={post._id}>
           <Post {...post} />
