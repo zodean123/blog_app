@@ -23,9 +23,10 @@ export default function IndexPage() {
   }, []);
 
   async function handleDelete(id, authorId) {
-    console.log(userInfo);
-    console.log(authorId);
-    if(userInfo.id !== authorId) {
+    // console.log(userInfo);
+    // console.log(authorId);
+    if (String(userInfo.id).trim() !== String(authorId).trim()) {
+      console.log('Condition executed because ids do not match');
       setShowModal(true);
       return;
     }
