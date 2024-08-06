@@ -45,18 +45,105 @@ export default function Header() {
         <nav>
           {username ? (
             <>
-              <Link to="/create">Create new post</Link>
-              <a onClick={logout}>Logout @{username}</a>
+              <Link to="/create" className="button">Create new post</Link>
+              <button onClick={logout} className="button">Logout @{username}</button>
             </>
           ) : (
             <>
-              <Link to="/login">Login</Link>
-              <Link to="/register">Register</Link>
+              <Link to="/login" className="button">Login</Link>
+              <Link to="/register" className="button">Register</Link>
             </>
           )}
         </nav>
       </header>
+      <style>{navbarStyle}</style>
     </div>
   );
 }
 
+const navbarStyle = `
+  .navbar {
+    width: 100%;
+    background-color: #333;
+    overflow: auto;
+  }
+
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+  }
+
+  .logo {
+    color: white;
+    font-size: 24px;
+    text-decoration: none;
+  }
+
+  nav {
+    display: flex;
+    gap: 10px;
+  }
+
+  .button {
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+  }
+
+  .button:hover {
+    background-color: #45a049;
+    transform: scale(1.05);
+  }
+
+  /* Responsive adjustments for medium devices */
+  @media (max-width: 900px) {
+    .button {
+      padding: 8px 16px;
+      font-size: 14px;
+    }
+
+    header {
+      padding: 8px 16px;
+    }
+
+    .logo {
+      font-size: 20px;
+    }
+  }
+
+  /* Responsive adjustments for phone devices */
+  @media (max-width: 600px) {
+    header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .logo {
+      margin-bottom: 10px;
+    }
+
+    nav {
+      flex-direction: column;
+      width: 100%;
+    }
+
+    .button {
+      width: 100%;
+      text-align: center;
+      font-size: 18px;
+      padding: 15px;
+      margin-bottom: 10px;
+    }
+  }
+`;
