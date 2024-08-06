@@ -23,10 +23,7 @@ export default function IndexPage() {
   }, []);
 
   async function handleDelete(id, authorId) {
-    // console.log(userInfo);
-    // console.log(authorId);
     if (String(userInfo.id).trim() !== String(authorId).trim()) {
-      console.log('Condition executed because ids do not match');
       setShowModal(true);
       return;
     }
@@ -49,7 +46,6 @@ export default function IndexPage() {
       setShowModal(true);
     }
   }
-  
 
   return (
     <>
@@ -72,6 +68,8 @@ export default function IndexPage() {
           </div>
         </div>
       )}
+      <style>{modalAppearAnimation}</style>
+      <style>{buttonStyle}</style>
     </>
   );
 }
@@ -113,12 +111,47 @@ const modalAppearAnimation = `
     cursor: pointer;
     font-size: 24px;
     color: red;
-    transition:.2s ease-in-out;
+    transition: .2s ease-in-out;
   }
 
   .close:hover {
     color: #000;
-    transform:scale(1.5)
+    transform: scale(1.5);
+  }
+`;
+
+const buttonStyle = `
+  .ViewPost, .DeletePost {
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+  }
+
+  .ViewPost {
+    background-color: #4CAF50; /* Green */
+    color: white;
+  }
+
+  .DeletePost {
+    background-color: #f44336; /* Red */
+    color: white;
+  }
+
+  /* Responsive adjustments for phone devices */
+  @media (max-width: 600px) {
+    .ViewPost, .DeletePost {
+      width: 100%;
+      padding: 15px;
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+
+    .ViewPost:hover, .DeletePost:hover {
+      transform: scale(1.05);
+    }
   }
 `;
 
