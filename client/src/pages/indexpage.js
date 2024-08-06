@@ -25,13 +25,12 @@ export default function IndexPage() {
   async function handleDelete(id, authorId) {
     console.log({
       userInfo: userInfo,
-      
       authorId: authorId
     });
-    // if (userInfo.id !== authorId) {
-    //   setShowModal(true);
-    //   return;
-    // }
+    if(userInfo.id !== authorId) {
+      setShowModal(true);
+      return;
+    }
   
     const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/post/${id}`, {
       method: 'DELETE',
