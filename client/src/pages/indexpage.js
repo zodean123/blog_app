@@ -28,9 +28,11 @@ export default function IndexPage() {
     }
     const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/post/${id}`, {
       method: 'DELETE',
-      credentials: 'include',
+      headers: {
+        'Authorization': `Bearer ${userInfo.token}`,
+      },
     });
-
+  
     if (response.ok) {
       setPosts(posts.filter(post => post._id !== id));
     } else {

@@ -145,14 +145,13 @@ app.post('/post', uploadMiddleWare.single('file'), async (req, res) => {
 
 app.get('/post', async (req, res) => {
   try {
-    const posts = await Post.find(); // Fetch all posts from the database
+    const posts = await Post.find().populate('author', ['username']);
     res.status(200).json(posts);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 });
 
-// Update Post Route
 app.put('/post/update', uploadMiddleWare.single('file'), async (req, res) => {
   let newPath = null;
   if (req.file) {
@@ -208,10 +207,8 @@ app.put('/post/update', uploadMiddleWare.single('file'), async (req, res) => {
   });
 });
 
-// Delete Post Route
 app.delete('/post/:id', async (req, res) => {
   const { id } = req.params;
-
   const authHeader = req.headers['authorization'];
   if (!authHeader) {
     return res.status(401).json({ error: 'Authorization header must be provided' });
@@ -249,7 +246,6 @@ app.delete('/post/:id', async (req, res) => {
     }
   });
 });
-
 
 app.get('/post/:id', async (req, res) => {
   const { id } = req.params;

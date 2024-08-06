@@ -12,23 +12,27 @@ export default function LoginPage() {
 
   async function login(ev) {
     ev.preventDefault();
-    const response = await fetch(process.env.REACT_APP_BACKEND_URL + '/login', {
-      method: 'POST',
-      body: JSON.stringify({ username, password }),
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-    });
-    if (response.ok) {
-
-   
-     
-      response.json().then(userInfo => {
-        setUserInfo(userInfo);
-        setRedirect(true);
-        localStorage.setItem('token', userInfo.token);
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/login`, {
+        method: 'POST',
+        body: JSON.stringify({ username, password }),
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
       });
-    } else {
-      setModalMessage('Wrong credentials, please try again!');
+
+      if (response.ok) {
+        const userInfo = await response.json();
+        setUserInfo(userInfo);
+        localStorage.setItem('token', userInfo.token); // Save token
+        setRedirect(true);
+      } else {
+        const errorData = await response.json();
+        setModalMessage(errorData.message || 'Wrong credentials, please try again!');
+        setShowModal(true);
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      setModalMessage('An unexpected error occurred.');
       setShowModal(true);
     }
   }
@@ -53,7 +57,7 @@ export default function LoginPage() {
           value={password}
           onChange={ev => setPassword(ev.target.value)}
         />
-        <button>Login</button>
+        <button type="submit">Login</button>
       </form>
 
       {showModal && (
