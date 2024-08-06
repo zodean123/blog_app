@@ -23,7 +23,11 @@ export default function IndexPage() {
   }, []);
 
   async function handleDelete(id, authorId) {
-    console.log(userInfo, authorId);
+    console.log({
+      userInfo: userInfo,
+      
+      authorId: authorId
+    });
     // if (userInfo.id !== authorId) {
     //   setShowModal(true);
     //   return;
