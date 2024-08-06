@@ -26,11 +26,14 @@ export default function IndexPage() {
       setShowModal(true);
       return;
     }
+  
     const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/post/${id}`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${userInfo.token}`,
+        'Content-Type': 'application/json'
       },
+      credentials: 'include',
     });
   
     if (response.ok) {
@@ -38,8 +41,11 @@ export default function IndexPage() {
     } else {
       const errorData = await response.json();
       console.error("Error deleting post:", errorData.error);
+      setModalMessage(errorData.error || 'Error deleting post');
+      setShowModal(true);
     }
   }
+  
 
   return (
     <>

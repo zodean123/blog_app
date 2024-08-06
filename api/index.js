@@ -164,16 +164,21 @@ app.put('/post/update', uploadMiddleWare.single('file'), async (req, res) => {
 
   const authHeader = req.headers['authorization'];
   if (!authHeader) {
+    console.log('Authorization header missing');
     return res.status(401).json({ error: 'Authorization header must be provided' });
   }
 
   const token = authHeader.split(' ')[1];
   if (!token) {
+    console.log('Token missing');
     return res.status(401).json({ error: 'Token must be provided' });
   }
 
   jwt.verify(token, secret, {}, async (err, info) => {
-    if (err) return res.status(401).json({ error: 'Unauthorized' });
+    if (err) {
+      console.log('Token verification failed:', err);
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
 
     const { id, title, summary, content } = req.body;
 
@@ -207,20 +212,27 @@ app.put('/post/update', uploadMiddleWare.single('file'), async (req, res) => {
   });
 });
 
+
 app.delete('/post/:id', async (req, res) => {
   const { id } = req.params;
   const authHeader = req.headers['authorization'];
+  
   if (!authHeader) {
+    console.log('Authorization header missing');
     return res.status(401).json({ error: 'Authorization header must be provided' });
   }
 
   const token = authHeader.split(' ')[1];
   if (!token) {
+    console.log('Token missing');
     return res.status(401).json({ error: 'Token must be provided' });
   }
 
   jwt.verify(token, secret, {}, async (err, info) => {
-    if (err) return res.status(401).json({ error: 'Unauthorized' });
+    if (err) {
+      console.log('Token verification failed:', err);
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
 
     try {
       const postDoc = await Post.findById(id);
@@ -236,7 +248,6 @@ app.delete('/post/:id', async (req, res) => {
       }
 
       await postDoc.deleteOne();
-
       return res.json({ message: 'Post deleted successfully', redirect: '/' });
     } catch (error) {
       console.error('Error deleting post:', error);

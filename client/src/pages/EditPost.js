@@ -27,25 +27,34 @@ export default function EditPost(){
 
 
 
- async function updatePost(ev) {
+  async function updatePost(ev) {
     ev.preventDefault();
-    const data  = new FormData();
-    data.set('title',title);
-    data.set('summary',summary);
-    data.set('content',content);
-    data.set('id',id);
-    if(files?.[0]){
-      data.set('file',files?.[0]);
+    const data = new FormData();
+    data.set('title', title);
+    data.set('summary', summary);
+    data.set('content', content);
+    data.set('id', id);
+    if (files?.[0]) {
+      data.set('file', files?.[0]);
     }
-    const response =  await fetch(process.env.REACT_APP_BACKEND_URL + '/post/update',{
-      method:'PUT',
-      body:data,
-      credentials:'include',
+  
+    const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/post/update`, {
+      method: 'PUT',
+      body: data,
+      credentials: 'include',
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
     });
+  
     if (response.ok) {
       setRedirect(true);
+    } else {
+      const errorData = await response.json();
+      console.error("Error updating post:", errorData.error);
     }
   }
+  
   if(redirect){
     return <Navigate to={'/post/'+id}/>
   }
