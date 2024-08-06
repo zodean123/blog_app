@@ -105,13 +105,32 @@ app.post('/logout', (req, res) => {
   res.cookie('token', '').json('ok');
 });
 
+// Create uploads directory if it doesn't exist
+const uploadsDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir);
+    console.log('Uploads directory created.');
+}
+
+console.log('Frontend URL:', process.env.FRONTEND_URL);
+
+app.use(cors({
+  origin: process.env.FRONTEND_URL,
+  credentials: true,
+}));
+
+app.use(express.json());
+app.use(cookieParser());
+app.use('/uploads', express.static(uploadsDir));
+
+// Create Post
 app.post('/post', uploadMiddleWare.single('file'), async (req, res) => {
   try {
-    const { originalname, path } = req.file;
+    const { originalname, path: tempPath } = req.file;
     const parts = originalname.split('.');
     const ext = parts[parts.length - 1];
-    const newPath = path + '.' + ext;
-    fs.renameSync(path, newPath);
+    const newPath = `${tempPath}.${ext}`;
+    fs.renameSync(tempPath, newPath);
 
     const authHeader = req.headers['authorization'];
     if (!authHeader) {
@@ -143,6 +162,7 @@ app.post('/post', uploadMiddleWare.single('file'), async (req, res) => {
   }
 });
 
+// Get Posts
 app.get('/post', async (req, res) => {
   try {
     const posts = await Post.find().populate('author', ['username']);
