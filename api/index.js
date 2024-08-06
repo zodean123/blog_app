@@ -195,45 +195,84 @@ app.get('/profile', (req, res) => {
   
   // });
 
+  // app.post('/post', uploadMiddleWare.single('file'), async (req, res) => {
+  //   try {
+  //     const { originalname, path } = req.file;
+  //     const parts = originalname.split('.');
+  //     const ext = parts[parts.length - 1];
+  //     const newPath = path + '.' + ext;
+  //     fs.renameSync(path, newPath);
+  
+  //     // Retrieve token from Authorization header
+  //     console.log(req.headers);
+  //     const authHeader = req.headers['authorization'];
+  //     if (!authHeader) {
+  //       return res.status(401).json({ error: 'Authorization header must be provided' });
+  //     }
+  //     const token = authHeader.split(' ')[1];
+  //     if (!token) {
+  //       return res.status(401).json({ error: 'Token must be provided' });
+  //     }
+  
+  //     jwt.verify(token, secret, {}, async (err, info) => {
+  //       if (err) {
+  //         return res.status(403).json({ error: 'Invalid token' });
+  //       }
+  
+  //       const { title, summary, content } = req.body;
+  //       const postDoc = await Post.create({
+  //         title,
+  //         summary,
+  //         content,
+  //         cover: newPath,
+  //         author: info.id,
+  //       });
+  //       res.json(postDoc);
+  //     });
+  //   } catch (err) {
+  //     console.error('Error in /post route:', err);
+  //     res.status(500).json({ error: 'Internal Server Error' });
+  //   }
+  // });
+
   app.post('/post', uploadMiddleWare.single('file'), async (req, res) => {
     try {
-      const { originalname, path } = req.file;
-      const parts = originalname.split('.');
-      const ext = parts[parts.length - 1];
-      const newPath = path + '.' + ext;
-      fs.renameSync(path, newPath);
-  
-      // Retrieve token from Authorization header
-      console.log(req.headers);
-      const authHeader = req.headers['authorization'];
-      if (!authHeader) {
-        return res.status(401).json({ error: 'Authorization header must be provided' });
-      }
-      const token = authHeader.split(' ')[1];
-      if (!token) {
-        return res.status(401).json({ error: 'Token must be provided' });
-      }
-  
-      jwt.verify(token, secret, {}, async (err, info) => {
-        if (err) {
-          return res.status(403).json({ error: 'Invalid token' });
+        const { originalname, path } = req.file;
+        const parts = originalname.split('.');
+        const ext = parts[parts.length - 1];
+        const newPath = path + '.' + ext;
+        fs.renameSync(path, newPath);
+
+        // Retrieve token from Authorization header
+        const authHeader = req.headers['authorization'];
+        if (!authHeader) {
+            return res.status(401).json({ error: 'Authorization header must be provided' });
         }
-  
-        const { title, summary, content } = req.body;
-        const postDoc = await Post.create({
-          title,
-          summary,
-          content,
-          cover: newPath,
-          author: info.id,
+        const token = authHeader.split(' ')[1];
+        if (!token) {
+            return res.status(401).json({ error: 'Token must be provided' });
+        }
+
+        jwt.verify(token, secret, {}, async (err, info) => {
+            if (err) {
+                return res.status(403).json({ error: 'Invalid token' });
+            }
+
+            const { title, summary, content } = req.body;
+            const postDoc = await Post.create({
+                title,
+                summary,
+                content,
+                cover: newPath,
+                author: info.id,
+            });
+            res.json(postDoc);
         });
-        res.json(postDoc);
-      });
     } catch (err) {
-      console.error('Error in /post route:', err);
-      res.status(500).json({ error: 'Internal Server Error' });
+        console.error('Error in /post route:', err);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
-  });
+});
   
 
   app.put('/post/update', uploadMiddleWare.single('file'), async (req, res) => {

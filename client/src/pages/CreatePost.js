@@ -1,8 +1,3 @@
-import 'react-quill/dist/quill.snow.css';
-import { useState } from 'react';
-import Editor from '../Editor';
-import { Navigate } from 'react-router-dom';
-
 export default function CreatePost() {
     const [title, setTitle] = useState('');
     const [summary, setSummary] = useState('');

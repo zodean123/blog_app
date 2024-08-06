@@ -5,21 +5,24 @@ import Post from '../Post';
 
 export default function IndexPage() {
   const [posts, setPosts] = useState([]);
-  const [showModal, setShowModal] = useState(false); 
+  const [showModal, setShowModal] = useState(false);
   const { userInfo } = useContext(UserContext);
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch(process.env.REACT_APP_BACKEND_URL + '/post')
+    fetch(`${process.env.REACT_APP_BACKEND_URL}/post`)
       .then(response => response.json())
       .then(posts => {
         setPosts(posts);
+      })
+      .catch(error => {
+        console.error("Error fetching posts:", error);
       });
   }, []);
 
   async function handleDelete(id, authorId) {
     if (userInfo.id !== authorId) {
-      setShowModal(true); 
+      setShowModal(true);
       return;
     }
     const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/post/${id}`, {
@@ -47,7 +50,6 @@ export default function IndexPage() {
         </div>
       ))}
 
-    
       {showModal && (
         <div className="modal" style={modalStyle}>
           <div className="modal-content">
@@ -60,23 +62,21 @@ export default function IndexPage() {
   );
 }
 
-
 const modalStyle = {
   display: 'block',
   position: 'fixed',
   zIndex: '1',
   left: '50%',
   top: '50%',
-  transform: 'translate(-50%, -50%) scale(0)', 
+  transform: 'translate(-50%, -50%) scale(0)',
   backgroundColor: '#fff',
   padding: '40px',
   borderRadius: '20px',
   boxShadow: '0 10px 20px rgba(0, 0, 0, 0.2)',
-  maxWidth: '500px', 
-  width: '80%', 
-  animation: 'modalAppear 0.3s ease-out forwards', 
+  maxWidth: '500px',
+  width: '80%',
+  animation: 'modalAppear 0.3s ease-out forwards',
 };
-
 
 const modalAppearAnimation = `
   @keyframes modalAppear {
@@ -107,7 +107,6 @@ const modalAppearAnimation = `
     transform:scale(1.5)
   }
 `;
-
 
 const styleElement = document.createElement('style');
 styleElement.appendChild(document.createTextNode(modalAppearAnimation));
