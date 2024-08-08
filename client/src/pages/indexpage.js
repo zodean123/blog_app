@@ -122,6 +122,7 @@ const modalAppearAnimation = `
   }
 `;
 
+
 const styleElement = document.createElement('style');
 styleElement.appendChild(document.createTextNode(modalAppearAnimation));
 document.head.appendChild(styleElement);
