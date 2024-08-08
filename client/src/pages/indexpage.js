@@ -24,6 +24,8 @@ export default function IndexPage() {
 
   async function handleDelete(id, authorId) {
     if (String(userInfo.id).trim() !== String(authorId).trim()) {
+
+  
       setShowModal(true);
       return;
     }
