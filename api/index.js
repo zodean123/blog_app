@@ -195,6 +195,7 @@ app.put('/post/update', uploadMiddleWare.single('file'), async (req, res) => {
         return res.status(403).json({ error: 'You are not the author' });
       }
 
+      
       await postDoc.updateOne({
         title,
         summary,
